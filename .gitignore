@@ -1,0 +1,7 @@
+
+# Dont add node modules
+/node_modules
+
+
+# dont add env variable
+.env
