@@ -22,7 +22,7 @@ exports.getSchools = asyncHandler(async (req, res) => {
 
     return res.status(200).json({
         success: true,
-        message: "List of schools",
+        message: "Schools retrieved successfully",
         data: data
     })
 })
