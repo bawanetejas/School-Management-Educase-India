@@ -5,6 +5,7 @@ const morgan = require('morgan');
 require('dotenv').config();
 
 const { testConnection, pool } = require('./config/database');
+const schoolsRoutes = require("./routes/schools.routes")
 
 
 const app = express();
@@ -34,9 +35,7 @@ app.get('/health', (req, res) => {
     });
 });
 
-
-
-
+app.use("/schools", schoolsRoutes)
 
 // 404 handler
 app.use((req, res) => {
@@ -46,15 +45,6 @@ app.use((req, res) => {
     });
 });
 
-// Global error handler
-app.use((err, req, res, next) => {
-    console.error('Global error handler:', err);
-    res.status(err.status || 500).json({
-        success: false,
-        message: err.message || 'Internal server error',
-        error: process.env.NODE_ENV === 'development' ? err.stack : undefined
-    });
-});
 
 // Start server
 const startServer = async () => {
@@ -88,4 +78,16 @@ process.on('unhandledRejection', (err) => {
 
 // Start the server
 startServer();
+
+
+// Global error handler
+app.use((err, req, res, next) => {
+    console.error('Global error handler:', err);
+    res.status(err.status || 500).json({
+        success: false,
+        message: err.message || 'Internal server error',
+        error: process.env.NODE_ENV === 'development' ? err.stack : undefined
+    });
+});
+
 
