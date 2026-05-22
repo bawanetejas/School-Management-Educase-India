@@ -35,7 +35,7 @@ app.get('/health', (req, res) => {
     });
 });
 
-app.use("/schools", schoolsRoutes)
+app.use("/api/schools", schoolsRoutes)
 
 // 404 handler
 app.use((req, res) => {
