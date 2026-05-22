@@ -1,6 +1,9 @@
 const { pool } = require("../config/database");
 const AppError = require("../utils/AppError");
+const { calculateDistance } = require("../utils/distanceCalcultor");
 
+
+//  add school
 exports.createSchool = async (schoolData) => {
     try {
         const { name, address, latitude, longitude } = schoolData;
@@ -44,5 +47,52 @@ exports.createSchool = async (schoolData) => {
     } catch (error) {
         console.error('Error in addSchool:', error);
         throw new AppError(error.message, 500);
+    }
+};
+
+
+
+//  List all schools sorted by proximity to user's location
+
+exports.listSchools = async (coordinates) => {
+    try {
+        const userLatitude = parseFloat(coordinates.latitude);
+        const userLongitude = parseFloat(coordinates.longitude);
+
+        // Fetch all schools from database
+        const [schools] = await pool.query('SELECT * FROM schools');
+
+        if (schools.length === 0) {
+            return []
+        }
+
+        // Calculate distance for each school and add to object
+        const schoolsWithDistance = schools.map(school => {
+            const distance = calculateDistance(
+                userLatitude,
+                userLongitude,
+                school.latitude,
+                school.longitude
+            );
+
+            return {
+                id: school.id,
+                name: school.name,
+                address: school.address,
+                latitude: school.latitude,
+                longitude: school.longitude,
+                distance: parseFloat(distance.toFixed(2)) // Distance in kilometers
+            };
+        });
+
+        // Sort schools by distance (nearest first)
+        schoolsWithDistance.sort((a, b) => a.distance - b.distance);
+
+        return schoolsWithDistance;
+
+    } catch (error) {
+        console.error('Error in listSchools:', error);
+        throw new AppError("An error occurred while retrieving schools", 500);
+
     }
 };
