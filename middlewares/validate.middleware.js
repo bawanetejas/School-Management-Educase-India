@@ -2,6 +2,7 @@
 
 const validate = (schema, source = 'body') => {
     return (req, res, next) => {
+
         const result = schema.safeParse(req[source]);
 
         if (!result.success) {
@@ -9,10 +10,7 @@ const validate = (schema, source = 'body') => {
                 success: false,
                 message: 'Validation failed',
 
-                errors: result.error.errors.map(err => ({
-                    field: err.path.join('.'),
-                    message: err.message
-                }))
+                errors: result.error.errors
             });
         }
 
